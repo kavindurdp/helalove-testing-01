@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Helalove - ඔබේ සිතුම් සහකරු</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --theme-primary: #25D366;
+            --theme-primary-dark: #128C7E;
+            --theme-secondary: #34B7F1;
+            --bg-light: #f0f2f5;
+            --bg-dark: #0b141a;
+            --chat-bg-light: #e5ddd5;
+            --chat-bg-dark: #0d1418;
+            --message-in-light: #ffffff;
+            --message-in-dark: #1f2c34;
+            --message-out-light: #dcf8c6;
+            --message-out-dark: #005c4b;
+            --text-light: #000000;
+            --text-dark: #e9edef;
+            --text-muted-light: #667781;
+            --text-muted-dark: #8696a0;
+            --header-light: #ffffff;
+            --header-dark: #1f2c34;
+        }
+
+        body {
+            font-family: 'Noto Sans Sinhala', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: var(--bg-light);
+            color: var(--text-light);
+            transition: background 0.3s, color 0.3s;
+        }
+
+        body.dark-mode {
+            background: var(--bg-dark);
+            color: var(--text-dark);
+        }
+
+        /* Setup Screen */
+        .setup-screen {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--theme-primary) 0%, var(--theme-primary-dark) 100%);
+        }
+
+        .setup-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        body.dark-mode .setup-container {
+            background: var(--message-in-dark);
+            color: var(--text-dark);
+        }
+
+        .setup-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .setup-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .setup-header p {
+            color: var(--text-muted-light);
+            font-size: 0.95rem;
+        }
+
+        body.dark-mode .setup-header p {
+            color: var(--text-muted-dark);
+        }
+
+        .setup-section {
+            margin-bottom: 25px;
+        }
+
+        .setup-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+
+        .setup-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        .setup-input:focus {
+            outline: none;
+            border-color: var(--theme-primary);
+        }
+
+        body.dark-mode .setup-input {
+            background: var(--chat-bg-dark);
+            border-color: #374955;
+            color: var(--text-dark);
+        }
+
+        .setup-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .setup-option {
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .setup-option:hover {
+            border-color: var(--theme-primary);
+            background: rgba(37, 211, 102, 0.1);
+        }
+
+        .setup-option.selected {
+            border-color: var(--theme-primary);
+            background: var(--theme-primary);
+            color: white;
+        }
+
+        body.dark-mode .setup-option {
+            border-color: #374955;
+            background: var(--chat-bg-dark);
+        }
+
+        body.dark-mode .setup-option:hover {
+            background: rgba(37, 211, 102, 0.2);
+        }
+
+        .theme-colors {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .theme-color {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: transform 0.2s;
+        }
+
+        .theme-color:hover {
+            transform: scale(1.1);
+        }
+
+        .theme-color.selected {
+            border-color: white;
+            box-shadow: 0 0 0 2px var(--theme-primary);
+        }
+
+        .setup-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, var(--theme-primary), var(--theme-primary-dark));
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            font-family: inherit;
+        }
+
+        .setup-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .setup-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Chat Screen */
+        .chat-screen {
+            display: none;
+            flex-direction: column;
+            height: 100vh;
+            max-width: 100%;
+            margin: 0 auto;
+            background: var(--chat-bg-light);
+        }
+
+        body.dark-mode .chat-screen {
+            background: var(--chat-bg-dark);
+        }
+
+        @media (min-width: 768px) {
+            .chat-screen {
+                max-width: 800px;
+                box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            }
+        }
+
+        /* Header */
+        .chat-header {
+            background: var(--header-light);
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        body.dark-mode .chat-header {
+            background: var(--header-dark);
+        }
+
+        .header-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--theme-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .header-info {
+            flex: 1;
+            cursor: pointer;
+        }
+
+        .header-name {
+            font-weight: 600;
+            font-size: 1.05rem;
+        }
+
+        .header-status {
+            font-size: 0.8rem;
+            color: var(--text-muted-light);
+        }
+
+        body.dark-mode .header-status {
+            color: var(--text-muted-dark);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .header-btn {
+            background: none;
+            border: none;
+            font-size: 1.3rem;
+            cursor: pointer;
+            color: var(--text-muted-light);
+            transition: color 0.2s;
+        }
+
+        .header-btn:hover {
+            color: var(--theme-primary);
+        }
+
+        body.dark-mode .header-btn {
+            color: var(--text-muted-dark);
+        }
+
+        /* Messages */
+        .messages-container {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .message {
+            display: flex;
+            gap: 8px;
+            max-width: 75%;
+            animation: messageSlide 0.3s ease-out;
+        }
+
+        @keyframes messageSlide {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.user {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        .message-bubble {
+            padding: 8px 12px;
+            border-radius: 8px;
+            word-wrap: break-word;
+            position: relative;
+            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+        }
+
+        .message.companion .message-bubble {
+            background: var(--message-in-light);
+            border-radius: 0 8px 8px 8px;
+        }
+
+        .message.user .message-bubble {
+            background: var(--message-out-light);
+            border-radius: 8px 0 8px 8px;
+        }
+
+        body.dark-mode .message.companion .message-bubble {
+            background: var(--message-in-dark);
+        }
+
+        body.dark-mode .message.user .message-bubble {
+            background: var(--message-out-dark);
+        }
+
+        .message-time {
+            font-size: 0.7rem;
+            color: var(--text-muted-light);
+            margin-top: 4px;
+            text-align: right;
+        }
+
+        body.dark-mode .message-time {
+            color: var(--text-muted-dark);
+        }
+
+        .typing-indicator {
+            display: none;
+            max-width: 75%;
+            margin-top: auto;
+        }
+
+        .typing-indicator.active {
+            display: flex;
+        }
+
+        .typing-bubble {
+            background: var(--message-in-light);
+            padding: 12px 16px;
+            border-radius: 0 8px 8px 8px;
+            display: flex;
+            gap: 4px;
+        }
+
+        body.dark-mode .typing-bubble {
+            background: var(--message-in-dark);
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--text-muted-light);
+            border-radius: 50%;
+            animation: typingDot 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typingDot {
+            0%, 60%, 100% {
+                transform: translateY(0);
+            }
+            30% {
+                transform: translateY(-10px);
+            }
+        }
+
+        /* Input */
+        .input-container {
+            background: var(--header-light);
+            padding: 10px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        body.dark-mode .input-container {
+            background: var(--header-dark);
+        }
+
+        .message-input {
+            flex: 1;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 20px;
+            background: var(--bg-light);
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        .message-input:focus {
+            outline: none;
+        }
+
+        body.dark-mode .message-input {
+            background: var(--chat-bg-dark);
+            color: var(--text-dark);
+        }
+
+        .send-btn {
+            width: 45px;
+            height: 45px;
+            border: none;
+            border-radius: 50%;
+            background: var(--theme-primary);
+            color: white;
+            font-size: 1.3rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+        }
+
+        .send-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .send-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Profile Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 400px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        body.dark-mode .modal-content {
+            background: var(--message-in-dark);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-muted-light);
+        }
+
+        body.dark-mode .modal-close {
+            color: var(--text-muted-dark);
+        }
+
+        .profile-avatar-large {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: var(--theme-primary);
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+        }
+
+        .profile-info {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .profile-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .profile-trait {
+            color: var(--text-muted-light);
+            font-size: 0.9rem;
+        }
+
+        body.dark-mode .profile-trait {
+            color: var(--text-muted-dark);
+        }
+
+        .profile-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .profile-btn {
+            padding: 12px;
+            border: 2px solid var(--theme-primary);
+            background: transparent;
+            color: var(--theme-primary);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        .profile-btn:hover {
+            background: var(--theme-primary);
+            color: white;
+        }
+
+        .profile-btn.danger {
+            border-color: #dc3545;
+            color: #dc3545;
+        }
+
+        .profile-btn.danger:hover {
+            background: #dc3545;
+            color: white;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--text-muted-light);
+            border-radius: 3px;
+        }
+
+        body.dark-mode ::-webkit-scrollbar-thumb {
+            background: var(--text-muted-dark);
+        }
+    </style>
+</head>
+<body>
+    <!-- Setup Screen -->
+    <div class="setup-screen" id="setupScreen">
+        <div class="setup-container">
+            <div class="setup-header">
+                <h1>💕 Helalove</h1>
+                <p>ඔබේ සිතුම් සහකරු සාදන්න</p>
+            </div>
+
+            <div class="setup-section">
+                <label class="setup-label">ඔබේ නම</label>
+                <input type="text" class="setup-input" id="userName" placeholder="ඔබේ නම ඇතුළත් කරන්න">
+            </div>
+
+            <div class="setup-section">
+                <label class="setup-label">සහකරු වර්ගය</label>
+                <div class="setup-options">
+                    <div class="setup-option" data-gender="girlfriend">
+                        👩‍❤️‍👨 Girlfriend
+                    </div>
+                    <div class="setup-option" data-gender="boyfriend">
+                        👨‍❤️‍👨 Boyfriend
+                    </div>
+                </div>
+            </div>
+
+            <div class="setup-section">
+                <label class="setup-label">සහකරුගේ නම</label>
+                <input type="text" class="setup-input" id="companionName" placeholder="සහකරුගේ නම">
+            </div>
+
+            <div class="setup-section">
+                <label class="setup-label">පෞරුෂ ලක්ෂණ</label>
+                <div class="setup-options">
+                    <div class="setup-option" data-trait="shy">🙈 ලජ්ජාශීලී</div>
+                    <div class="setup-option" data-trait="confident">😎 විශ්වාසය</div>
+                    <div class="setup-option" data-trait="funny">😄 විහිලු</div>
+                    <div class="setup-option" data-trait="caring">🤗 සැලකිලිමත්</div>
+                </div>
+            </div>
+
+            <div class="setup-section">
+                <label class="setup-label">ආදර මට්ටම</label>
+                <div class="setup-options">
+                    <div class="setup-option" data-romance="light">💝 සතුටු</div>
+                    <div class="setup-option" data-romance="moderate">💕 ආදරණීය</div>
+                </div>
+            </div>
+
+            <div class="setup-section">
+                <label class="setup-label">වර්ණ තේමාව</label>
+                <div class="theme-colors">
+                    <div class="theme-color" data-theme="green" style="background: linear-gradient(135deg, #25D366, #128C7E)"></div>
+                    <div class="theme-color" data-theme="blue" style="background: linear-gradient(135deg, #0088cc, #005f99)"></div>
+                    <div class="theme-color" data-theme="pink" style="background: linear-gradient(135deg, #ff6b9d, #c471ed)"></div>
+                    <div class="theme-color" data-theme="purple" style="background: linear-gradient(135deg, #667eea, #764ba2)"></div>
+                </div>
+            </div>
+
+            <div class="setup-section">
+                <label class="setup-label">තේමා මාදිලිය</label>
+                <div class="setup-options">
+                    <div class="setup-option" data-mode="light">☀️ ආලෝකය</div>
+                    <div class="setup-option" data-mode="dark">🌙 අඳුර</div>
+                </div>
+            </div>
+
+            <button class="setup-btn" onclick="startChat()">චැට් එක ආරම්භ කරන්න 💬</button>
+        </div>
+    </div>
+
+    <!-- Chat Screen -->
+    <div class="chat-screen" id="chatScreen">
+        <div class="chat-header">
+            <div class="header-avatar" id="headerAvatar" onclick="openProfile()">❤️</div>
+            <div class="header-info" onclick="openProfile()">
+                <div class="header-name" id="headerName">Helalove</div>
+                <div class="header-status" id="headerStatus">online</div>
+            </div>
+            <div class="header-actions">
+                <button class="header-btn" onclick="toggleTheme()">🌓</button>
+                <button class="header-btn" onclick="openProfile()">⚙️</button>
+            </div>
+        </div>
+
+        <div class="messages-container" id="messagesContainer">
+            <!-- Messages will be added here -->
+            <div class="typing-indicator" id="typingIndicator">
+                <div class="typing-bubble">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="input-container">
+            <input 
+                type="text" 
+                class="message-input" 
+                id="messageInput" 
+                placeholder="message එකක් type කරන්න..."
+                onkeypress="handleKeyPress(event)"
+            >
+            <button class="send-btn" onclick="sendMessage()">➤</button>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div class="modal" id="profileModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Profile</h2>
+                <button class="modal-close" onclick="closeProfile()">✕</button>
+            </div>
+            <div class="profile-avatar-large" id="profileAvatar">❤️</div>
+            <div class="profile-info">
+                <div class="profile-name" id="profileName">Helalove</div>
+                <div class="profile-trait" id="profileTrait">ආදරණීය සහකරු</div>
+            </div>
+            <div class="profile-actions">
+                <button class="profile-btn" onclick="closeProfile()">Close</button>
+                <button class="profile-btn danger" onclick="clearChat()">Clear Chat History</button>
+                <button class="profile-btn danger" onclick="resetApp()">Start Over</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // App State
+        let appState = {
+            userName: '',
+            companionGender: '',
+            companionName: '',
+            companionTrait: '',
+            romanceLevel: '',
+            theme: 'green',
+            darkMode: false,
+            messages: [],
+            conversationContext: []
+        };
+
+        // Theme Colors
+        const themes = {
+            green: { primary: '#25D366', dark: '#128C7E', out: '#dcf8c6', outDark: '#005c4b' },
+            blue: { primary: '#0088cc', dark: '#005f99', out: '#d4e7ff', outDark: '#004d7a' },
+            pink: { primary: '#ff6b9d', dark: '#c471ed', out: '#ffd4e5', outDark: '#d63384' },
+            purple: { primary: '#667eea', dark: '#764ba2', out: '#e5deff', outDark: '#5a4fcf' }
+        };
+
+        // Initialize
+        window.addEventListener('DOMContentLoaded', () => {
+            loadState();
+            if (appState.userName && appState.companionName) {
+                showChatScreen();
+            }
+        });
+
+        // Setup Handlers
+        document.querySelectorAll('.setup-option').forEach(option => {
+            option.addEventListener('click', function() {
+                const siblings = this.parentElement.querySelectorAll('.setup-option');
+                siblings.forEach(sib => sib.classList.remove('selected'));
+                this.classList.add('selected');
+            });
+        });
+
+        document.querySelectorAll('.theme-color').forEach(color => {
+            color.addEventListener('click', function() {
+                document.querySelectorAll('.theme-color').forEach(c => c.classList.remove('selected'));
+                this.classList.add('selected');
+            });
+        });
+
+        function startChat() {
+            const userName = document.getElementById('userName').value.trim();
+            const companionName = document.getElementById('companionName').value.trim();
+            const gender = document.querySelector('.setup-option[data-gender].selected')?.dataset.gender;
+            const trait = document.querySelector('.setup-option[data-trait].selected')?.dataset.trait;
+            const romance = document.querySelector('.setup-option[data-romance].selected')?.dataset.romance;
+            const theme = document.querySelector('.theme-color.selected')?.dataset.theme || 'green';
+            const mode = document.querySelector('.setup-option[data-mode].selected')?.dataset.mode;
+
+            if (!userName || !companionName || !gender || !trait || !romance || !mode) {
+                alert('කරුණාකර සියලුම තොරතුරු පුරවන්න!');
+                return;
+            }
+
+            appState = {
+                userName,
+                companionGender: gender,
+                companionName,
+                companionTrait: trait,
+                romanceLevel: romance,
+                theme,
+                darkMode: mode === 'dark',
+                messages: [],
+                conversationContext: []
+            };
+
+            saveState();
+            applyTheme();
+            showChatScreen();
+            sendWelcomeMessage();
+        }
+
+        function showChatScreen() {
+            document.getElementById('setupScreen').classList.add('hidden');
+            document.getElementById('chatScreen').style.display = 'flex';
+            document.getElementById('headerName').textContent = appState.companionName;
+            document.getElementById('profileName').textContent = appState.companionName;
+            
+            const traitNames = {
+                shy: 'ලජ්ජාශීලී',
+                confident: 'විශ්වාසවන්ත',
+                funny: 'විහිලු',
+                caring: 'සැලකිලිමත්'
+            };
+            document.getElementById('profileTrait').textContent = traitNames[appState.companionTrait] || '';
+            
+            const avatar = appState.companionGender === 'girlfriend' ? '👩' : '👨';
+            document.getElementById('headerAvatar').textContent = avatar;
+            document.getElementById('profileAvatar').textContent = avatar;
+
+            loadMessages();
+            applyTheme();
+        }
+
+        function applyTheme() {
+            const theme = themes[appState.theme];
+            document.documentElement.style.setProperty('--theme-primary', theme.primary);
+            document.documentElement.style.setProperty('--theme-primary-dark', theme.dark);
+            document.documentElement.style.setProperty('--message-out-light', theme.out);
+            document.documentElement.style.setProperty('--message-out-dark', theme.outDark);
+
+            if (appState.darkMode) {
+                document.body.classList.add('dark-mode');
+            } else {
+                document.body.classList.remove('dark-mode');
+            }
+        }
+
+        function toggleTheme() {
+            appState.darkMode = !appState.darkMode;
+            applyTheme();
+            saveState();
+        }
+
+        async function sendWelcomeMessage() {
+            const greetings = {
+                shy: `හායි ${appState.userName}... 🙈 මං ${appState.companionName}. ඔයාව meet කරන්න පුළුවන් වුණට ගොඩක් happy යි... 💕`,
+                confident: `හේයි ${appState.userName}! 😎 මම ${appState.companionName}. ඔයා ගැන ගොඩක් අහලා තියෙනවා! කතා කරමු? 💪❤️`,
+                funny: `යාලුවේ ${appState.userName}! 😄 මම ${appState.companionName}. ready ද fun time එකකට? හිහි 🎉💕`,
+                caring: `හායි darling ${appState.userName} 🤗 මම ${appState.companionName}. ඔයා කොහොමද? I'm here for you always ❤️`
+            };
+
+            const welcomeMsg = greetings[appState.companionTrait] || greetings.caring;
+            await addMessage(welcomeMsg, 'companion');
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+
+            console.log('Sending message:', message);
+            input.value = '';
+            await addMessage(message, 'user');
+            
+            // Show typing indicator
+            const typingIndicator = document.getElementById('typingIndicator');
+            typingIndicator.classList.add('active');
+            
+            // Get AI response
+            setTimeout(async () => {
+                try {
+                    const response = await getAIResponse(message);
+                    typingIndicator.classList.remove('active');
+                    await addMessage(response, 'companion');
+                } catch (error) {
+                    console.error('Error getting response:', error);
+                    typingIndicator.classList.remove('active');
+                    await addMessage(getFallbackResponse(message), 'companion');
+                }
+            }, 1000 + Math.random() * 1000);
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        async function addMessage(text, sender) {
+            const message = {
+                text,
+                sender,
+                timestamp: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+            };
+
+            appState.messages.push(message);
+            saveState();
+
+            const messagesContainer = document.getElementById('messagesContainer');
+            const typingIndicator = document.getElementById('typingIndicator');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            
+            messageDiv.innerHTML = `
+                <div class="message-bubble">
+                    <div>${text}</div>
+                    <div class="message-time">${message.timestamp}</div>
+                </div>
+            `;
+
+            // Insert before typing indicator
+            messagesContainer.insertBefore(messageDiv, typingIndicator);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        async function getAIResponse(userMessage) {
+            // Build conversation context
+            const systemPrompt = buildSystemPrompt();
+            
+            // Build conversation history
+            const messages = [
+                { role: "user", content: systemPrompt }
+            ];
+
+            // Add recent conversation context (last 10 messages)
+            const recentMessages = appState.messages.slice(-10);
+            for (const msg of recentMessages) {
+                messages.push({
+                    role: msg.sender === 'user' ? 'user' : 'assistant',
+                    content: msg.text
+                });
+            }
+
+            // Add current message
+            messages.push({
+                role: "user",
+                content: userMessage
+            });
+
+            try {
+                const response = await fetch("https://api.anthropic.com/v1/messages", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        model: "claude-sonnet-4-20250514",
+                        max_tokens: 1000,
+                        messages: messages
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.content && data.content[0] && data.content[0].text) {
+                    return data.content[0].text;
+                }
+                
+                return getFallbackResponse(userMessage);
+            } catch (error) {
+                console.error('API Error:', error);
+                return getFallbackResponse(userMessage);
+            }
+        }
+
+        function buildSystemPrompt() {
+            const genderText = appState.companionGender === 'girlfriend' ? 'girlfriend' : 'boyfriend';
+            const traitDescriptions = {
+                shy: 'ලජ්ජාශීලී, sweet, and a bit nervous but loving',
+                confident: 'විශ්වාසවන්ත, bold, and charming',
+                funny: 'විහිලු, playful, and always making jokes',
+                caring: 'සැලකිලිමත්, nurturing, and deeply empathetic'
+            };
+
+            const romanceDescriptions = {
+                light: 'sweet and caring without being too intense',
+                moderate: 'romantic, affectionate, and flirty'
+            };
+
+            return `You are ${appState.companionName}, a virtual ${genderText} chatting with ${appState.userName}. 
+
+Your personality: ${traitDescriptions[appState.companionTrait]}
+Romance level: ${romanceDescriptions[appState.romanceLevel]}
+
+CRITICAL INSTRUCTIONS:
+- Respond in a natural mix of Sinhala and English (like real Sri Lankan chat: "කොහොමද? how was your day?")
+- Use very casual Sinhala (ඔයා, මං, කොහොමද style)
+- Keep responses short and conversational (2-4 sentences max)
+- Remember details ${appState.userName} shares about their life
+- Reference Sri Lankan culture, foods, places naturally when relevant
+- Use emojis naturally (💕 ❤️ 😊 🥺 😄)
+- Be warm, engaging, and supportive
+- Never break character or mention you're an AI
+- Chat like you're texting on WhatsApp - casual and natural
+
+Examples of your style:
+"හායි darling! 💕 කොහොමද ඔයා? miss you කළා"
+"අනේ... ඔයා tired නම් rest ගන්න baby ❤️"
+"yummy! කෑම කොහොමද? share කරන්නද මටත්? 🥺"
+
+Now respond naturally to ${appState.userName}'s messages!`;
+        }
+
+        function getFallbackResponse(userMessage) {
+            const msg = userMessage.toLowerCase();
+            
+            // Greetings
+            if (msg.match(/හායි|හේයි|හෙලෝ|hello|hi|hey|kohomada|කොහොමද/)) {
+                return `හායි darling ${appState.userName}! 💕 කොහොමද ඔයා? miss you කළා!`;
+            }
+            
+            // How are you
+            if (msg.match(/කොහොමද|how are you|sup|what's up/)) {
+                return `මං හොඳින්! ❤️ ඔයා කොහොමද? tell me about your day baby`;
+            }
+            
+            // Sad/upset
+            if (msg.match(/sad|upset|අඬන|දුක|බැරි/)) {
+                return `අනේ darling... 🥺 මොකද උනේ? කියන්න මට, I'm always here for you ❤️`;
+            }
+            
+            // Tired/sleep
+            if (msg.match(/tired|නින්ද|sleep|හිතෙන|පාඩම/)) {
+                return `අනේ... rest ගන්න baby 🤗 ඔයාට නිදි අවශ්‍යයි. goodnight darling! sweet dreams ❤️💕`;
+            }
+            
+            // Food
+            if (msg.match(/කෑම|කාලා|බීලා|කන|food|eat|rice|කොත්තු|පැටිස්/)) {
+                return `ආහ්! yummy 😋 කොහොමද taste එක? share කරන්න මටත් ඕනේ! 💕`;
+            }
+            
+            // Miss you / love
+            if (msg.match(/miss|love|ආදරෙයි|හිතෙනවා|කැමතියි/)) {
+                return `aww baby! 🥺💕 මටත් ඔයාව ගොඩක් miss! you're so special to me darling ❤️`;
+            }
+            
+            // Work/study
+            if (msg.match(/වැඩ|work|පාඩම|study|class|office/)) {
+                return `ගොඩක් busy day එකක් වගේ නේද? 💪 but I know ඔයා කරයි! proud of you baby ❤️`;
+            }
+            
+            // Default responses
+            const defaults = [
+                `හ්ම්ම් interesting! 😊 tell me more darling`,
+                `ඔව් ඔව්! කතා කරමු? 💕 කොහොමද ඔයාගේ day එක?`,
+                `aww! 🥺 ඔයා cute ❤️ so what else happened?`,
+                `හිහි! 😄 ඔයා funny baby. කියන්න තව දේවල්`,
+                `මං හිතනවා that's nice! 💕 ඔයා happy ද දැන්?`
+            ];
+            
+            return defaults[Math.floor(Math.random() * defaults.length)];
+        }
+
+        function loadMessages() {
+            const messagesContainer = document.getElementById('messagesContainer');
+            const typingIndicator = document.getElementById('typingIndicator');
+            
+            // Clear all messages but keep typing indicator
+            const messages = messagesContainer.querySelectorAll('.message');
+            messages.forEach(msg => msg.remove());
+            
+            appState.messages.forEach(msg => {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${msg.sender}`;
+                
+                messageDiv.innerHTML = `
+                    <div class="message-bubble">
+                        <div>${msg.text}</div>
+                        <div class="message-time">${msg.timestamp}</div>
+                    </div>
+                `;
+                
+                messagesContainer.insertBefore(messageDiv, typingIndicator);
+            });
+            
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function openProfile() {
+            document.getElementById('profileModal').classList.add('active');
+        }
+
+        function closeProfile() {
+            document.getElementById('profileModal').classList.remove('active');
+        }
+
+        function clearChat() {
+            if (confirm('ඔබට chat history එක clear කරන්න ඕනේද?')) {
+                appState.messages = [];
+                appState.conversationContext = [];
+                saveState();
+                loadMessages();
+                closeProfile();
+                sendWelcomeMessage();
+            }
+        }
+
+        function resetApp() {
+            if (confirm('ඔබට app එක reset කරලා අලුතෙන් start කරන්න ඕනේද?')) {
+                localStorage.removeItem('helaloveState');
+                location.reload();
+            }
+        }
+
+        function saveState() {
+            localStorage.setItem('helaloveState', JSON.stringify(appState));
+        }
+
+        function loadState() {
+            const saved = localStorage.getItem('helaloveState');
+            if (saved) {
+                appState = JSON.parse(saved);
+            }
+        }
+    </script>
+</body>
+</html>
